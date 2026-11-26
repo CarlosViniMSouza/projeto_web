@@ -1,0 +1,29 @@
+GET http://localhost:3000
+
+###
+
+GET http://localhost:3000/items
+Content-Type: application/json
+
+###
+
+POST http://localhost:3000/items
+Content-Type: application/json
+
+{
+    "name": "MacBook Pro M4"
+}
+
+###
+
+PUT http://localhost:3000/items/1
+Content-Type: application/json
+
+{
+    "name": "MacBook Air M4"
+}
+
+###
+
+DELETE http://localhost:3000/items/1
+Content-Type: application/json

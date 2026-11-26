@@ -1,0 +1,14 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: projeto_web_api
+    restart: unless-stopped
+    expose:
+      - "3000"
+    volumes:
+      - sqlite_data:/app/data
+
+  volumes:
+    sqlite_data:
