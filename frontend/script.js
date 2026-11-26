@@ -3,10 +3,14 @@ const API_BASE_URL = 'http://localhost:3000';
 
 const itemForm = document.querySelector('#itemForm');
 const itemNameInput = document.querySelector('#itemName');
+const itemDeliveredInput = document.querySelector('#itemDelivered');
+
 const itemsList = document.querySelector('#itemsList');
 const formTitle = document.querySelector('#formTitle');
+
 const submitButton = document.querySelector('#submitButton');
 const cancelEditButton = document.querySelector('#cancelEditButton');
+
 const formStatus = document.querySelector('#formStatus');
 const listStatus = document.querySelector('#listStatus');
 const connectionStatus = document.querySelector('#connectionStatus');
@@ -128,7 +132,7 @@ function renderItems(items) {
 async function getItem(id) {
     try {
         const item = await apiRequest(`/items/${id}`);
-        alert(`Item #${item.id}\\nNome: ${item.name}`);
+        alert(`Item #${item.id}\\nNome: ${item.name}\\nEntregue: ${item.delivered}`);
 
     } catch (error) {
         showStatus(listStatus, error.message, 'error');
@@ -138,6 +142,8 @@ async function getItem(id) {
 function startEditing(item) {
   editingId = item.id;
   itemNameInput.value = item.name;
+  itemDeliveredInput.value = item.delivered; // Preenche o campo de status com o valor atual do item
+
   formTitle.textContent = `Editar item #${item.id}`;
   submitButton.textContent = 'Salvar alterações';
   cancelEditButton.hidden = false;
@@ -161,7 +167,8 @@ function resetForm() {
 itemForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const name = itemNameInput.value.trim();
-    
+    const delivered = itemDeliveredInput.checked;
+
     if (!name) {
         showStatus(formStatus, 'Informe o nome do item.', 'error');
         itemNameInput.focus();
@@ -174,14 +181,14 @@ itemForm.addEventListener('submit', async (event) => {
         if (editingId === null) {
             await apiRequest('/items', {
                 method: 'POST',
-                body: JSON.stringify({ name })
+                body: JSON.stringify({ name, delivered })
             });
 
             showStatus(formStatus, 'Item cadastrado com sucesso.', 'success');
         } else {
             await apiRequest(`/items/${editingId}`, {
                 method: 'PUT',
-                body: JSON.stringify({ name })
+                body: JSON.stringify({ name, delivered })
             });
 
             showStatus(formStatus, 'Item atualizado com sucesso.', 'success');

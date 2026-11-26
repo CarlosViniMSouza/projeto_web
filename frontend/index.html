@@ -81,9 +81,18 @@
                                         name="name"
                                         type="text"
                                         class="form-control"
-                                        placeholder="Ex.: Caderno"
+                                        placeholder="Ex.: Nome do item"
                                         maxlength="120"
                                         required>
+
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            id="itemDelivered"
+                                        >
+                                        Entregue
+                                    </label>
+
                                 </div>
 
                                 <div class="col-auto">
@@ -98,9 +107,9 @@
                                 <div class="col-auto">
                                     <button
                                         id="cancelEditButton"
-                                        class="btn btn-outline-secondary"
+                                        class="btn btn-danger"
                                         type="button"
-                                        hidden>
+                                    >
                                         Cancelar
                                     </button>
                                 </div>

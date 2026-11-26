@@ -44,27 +44,28 @@ function getItemById(id) {
     });
 }
 
-function createItem(name) {
+function createItem(name, delivered) {
     return new Promise((resolve, reject) => {
         db.run(
-            'INSERT INTO items(name) VALUES(?)',
-            [name],
+            'INSERT INTO items(name, delivered) VALUES(?, ?)',
+            [name, delivered],
             function (err) {
                 if (err) reject(err);
                 else resolve({
                     id: this.lastID,
-                    name
+                    name,
+                    delivered
                 });
             }
         );
     });
 }
 
-function updateItem(id, name) {
+function updateItem(id, name, delivered) {
     return new Promise((resolve, reject) => {
         db.run(
-            'UPDATE items SET name = ? WHERE id = ?',
-            [name, id],
+            'UPDATE items SET name = ?, delivered = ? WHERE id = ?',
+            [name, delivered, id],
             function (err) {
                 if (err) reject(err);
                 else resolve(this.changes);
@@ -117,15 +118,27 @@ function sendJson(res, statusCode, data) {
     res.end(JSON.stringify(data));
 }
 
+// Conversor INT -> BOOL
+function normalizeItem(item) {
+    return {
+        ...item,
+        delivered: Boolean(item.delivered)
+    };
+}
+
 // ROTAS API
 const server = http.createServer(async (req, res) => {
     const { method, url } = req;
 
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader(
+        'Access-Control-Allow-Origin', '*'
+    );
+
     res.setHeader(
         'Access-Control-Allow-Methods',
         'GET, POST, PUT, DELETE, OPTIONS'
     );
+
     res.setHeader(
         'Access-Control-Allow-Headers',
         'Content-Type'
@@ -168,7 +181,7 @@ const server = http.createServer(async (req, res) => {
                 });
             }
 
-            return sendJson(res, 200, item);
+            return sendJson(res, 200, normalizeItem(item));
         }
 
         if (method === 'POST' && pathname === '/items') {
@@ -181,7 +194,13 @@ const server = http.createServer(async (req, res) => {
                 });
             }
 
-            const item = await createItem(data.name);
+            if (typeof data.delivered !== 'boolean') {
+                return sendJson(res, 400, {
+                    error: 'Campo delivered deve ser boolean'
+                });
+            }
+
+            const item = await createItem(data.name, data.delivered);
 
             return sendJson(res, 201, item);
         }
@@ -197,7 +216,13 @@ const server = http.createServer(async (req, res) => {
                 });
             }
 
-            const updated = await updateItem(id, data.name);
+            if (typeof data.delivered !== 'boolean') {
+                return sendJson(res, 400, {
+                    error: 'Campo delivered deve ser boolean'
+                });
+            }
+
+            const updated = await updateItem(id, data.name, data.delivered);
 
             if (!updated) {
                 return sendJson(res, 404, {
@@ -232,12 +257,12 @@ const server = http.createServer(async (req, res) => {
 
     } catch (err) {
 
-        const status =
+        const statusCode =
             err.message === 'JSON inválido'
                 ? 400
                 : 500;
 
-        sendJson(res, status, {
+        sendJson(res, statusCode, {
             error:
                 err.message ||
                 'Erro interno do servidor'
