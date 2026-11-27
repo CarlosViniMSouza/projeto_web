@@ -155,7 +155,7 @@ const server = http.createServer(async (req, res) => {
     );
 
     const pathname = parsedUrl.pathname;
-    const idMatch = pathname.match(/^\/items\/(\d+)$/);
+    const idMatch = pathname.match(/api\/items\/(\d+)$/);
 
     try {
         if (method === 'GET' && pathname === '/') {

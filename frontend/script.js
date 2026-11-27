@@ -1,5 +1,5 @@
 // Se a API estiver em outro endereço, altere esta constante.
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 const itemForm = document.querySelector('#itemForm');
 const itemNameInput = document.querySelector('#itemName');
@@ -49,7 +49,7 @@ async function checkApi() {
     showStatus(connectionStatus, 'Verificando conexão...');
 
     try {
-        const result = await apiRequest('/');
+        const result = await apiRequest('/items');
         showStatus(connectionStatus, result.message || 'API respondeu corretamente.', 'success');
         
     } catch (error) {
