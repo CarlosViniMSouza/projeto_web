@@ -164,7 +164,7 @@ const server = http.createServer(async (req, res) => {
             });
         }
 
-        if (method === 'GET' && pathname === '/items') {
+        if (method === 'GET' && pathname === '/api/items') {
             const items = await getAllItems();
             return sendJson(res, 200, items);
         }
@@ -184,7 +184,7 @@ const server = http.createServer(async (req, res) => {
             return sendJson(res, 200, normalizeItem(item));
         }
 
-        if (method === 'POST' && pathname === '/items') {
+        if (method === 'POST' && pathname === '/api/items') {
 
             const data = await parseBody(req);
 
